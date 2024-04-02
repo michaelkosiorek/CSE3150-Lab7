@@ -33,7 +33,7 @@ double cosine_distance(const double_vector & one, const double_vector & two) {
         d = -1.0;
 
 
-    return 1.0 - d;
+    return acos(d);
 }
 
 std::vector<vector_pair> make_vec_pairs(const std::vector<double_vector>& vectors_original) {
@@ -47,4 +47,10 @@ std::vector<vector_pair> make_vec_pairs(const std::vector<double_vector>& vector
         }
     }
     return vec_pairs;
+}
+
+// a lot of these numbers are like .00000001 off after all the calculations so
+bool compare_doubles(double x, double y) {
+    if (x + .00001 > y && x - .00001 < y) return true;
+    else return false;
 }

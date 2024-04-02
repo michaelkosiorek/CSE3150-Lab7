@@ -46,5 +46,6 @@ double square(const double & d);
 double dot_product(const double_vector & one, const double_vector & two) ;
 double magnitude(const double_vector & my_vector);
 double cosine_distance(const double_vector & one, const double_vector & two);
+bool compare_doubles(double x, double y);
 
 #endif

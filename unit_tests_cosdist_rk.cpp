@@ -45,17 +45,7 @@ TEST_CASE("cos-distance-r^k") {
         CHECK_EQ(dot_product(v1, v2), 5.0);
     };
 
-    SUBCASE("basic cos-distance calc") {
-        double_vector v1 = {3, {0, 0, 1}};
-        double_vector v2 = {3, {0, 0, 1}};
 
-        CHECK_EQ(cosine_distance(v1, v2), 0.0);
-
-        double_vector v3 = {3, {1, 0, 0}};
-        double_vector v4 = {3, {0, 0, 1}};
-
-        CHECK_EQ(cosine_distance(v3, v4), 1.0);
-    };
 
     SUBCASE("read many double vectors") {
         std::ifstream dv_stream;
@@ -79,28 +69,45 @@ TEST_CASE("cos-distance-r^k") {
         for (int i=0; i < actual_dvs.double_vectors.size(); i++) {
             CHECK_EQ(actual_dvs.double_vectors[i].all_dimensions, expected_dvs.double_vectors[i].all_dimensions); 
         }
-
-        // test for cos_distances
-        /*
-        for (int j=0; j < actual_dvs.vector_pairs.size(); j++) {
-            std::cout << "Dist of these vectors below:" << actual_dvs.vector_pairs[j].v1.all_dimensions << "<->" << actual_dvs.vector_pairs[j].v2.all_dimensions << std::endl;
-            std::cout << "DISTANCE:" << actual_dvs.vector_pairs[j].vec_cos_distance << std::endl;
-        }
-        */
-
     };
 
-    SUBCASE("test 5d vectors") {
-        double_vector v1 = {5, {1, 2, 3, 4, 5}};
-        double_vector v2 = {5, {5, 4, 3, 2, 1}};
-        double_vector v3 = {5, {0, 0, 1, 0, 0}};
+    SUBCASE("test simple 5d vectors") {
+        double_vector v1 = {5, {1, 1, 1, 1, 1}};
+        double_vector v2 = {5, {1, 1, 1, 1, 0}};
+
+        vector_distances vec_distances;
+        vec_distances.double_vectors.push_back(v1);
+        vec_distances.double_vectors.push_back(v2);
+
+
+        CHECK(compare_doubles(cosine_distance(v1, v2), .463648));        
+    };
+
+    SUBCASE("test 5d vectors in full structure") {
+        double_vector v1 = {5, {1, 2.5, 0.5, 0.99, 1.5}};
+        double_vector v2 = {5, {1, 3.6, 1.9, 0.98, -4}};
+        double_vector v3 = {5, {1, 4.5, 3.2, 0.71, 8.2}};
 
         vector_distances vec_distances;
         vec_distances.double_vectors.push_back(v1);
         vec_distances.double_vectors.push_back(v2);
         vec_distances.double_vectors.push_back(v3);
 
-        
-    }
+        vec_distances.vector_pairs = make_vec_pairs(vec_distances.double_vectors);
+
+        sort(vec_distances.vector_pairs.begin(), vec_distances.vector_pairs.end(), [](const vector_pair &v1, const vector_pair &v2) -> bool {
+            return v1.vec_cos_distance < v2.vec_cos_distance;
+        }
+        );
+
+        std::vector<double> expected_sorted_distances = {.604261, 1.25817, 1.72212};
+
+        for (int i=0; i < vec_distances.vector_pairs.size(); i++) {
+            // std::cout << vec_distances.vector_pairs[i].vec_cos_distance << std::endl;
+            // std::cout << expected_sorted_distances[i] << std::endl;
+            CHECK(compare_doubles(vec_distances.vector_pairs[i].vec_cos_distance, expected_sorted_distances[i]));
+        }
+    };
+
 
 }
