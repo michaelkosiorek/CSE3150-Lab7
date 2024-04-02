@@ -10,5 +10,6 @@
 
 
 double_vector read_dv_from_line(std::istream& in_stream);
+vector_distances read_all_dvs_from_file(std::istream& in_stream);
 
 #endif
